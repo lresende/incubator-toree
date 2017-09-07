@@ -61,8 +61,13 @@ object InterpreterManager {
       v.split(":") match {
         case Array(name, className) =>
           try {
-            val i = instantiate(className, config)
-            acc + (name -> i)
+            if(! name.equalsIgnoreCase("scala")) {
+              // skip kernels that are not scala
+              acc
+            } else {
+              val i = instantiate(className, config)
+              acc + (name -> i)
+            }
           }
           catch {
             case e:Throwable =>
