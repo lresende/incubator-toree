@@ -279,8 +279,10 @@ trait ScalaInterpreterSpecific extends SettingsProducerLike { this: ScalaInterpr
       //updatePrintStreams(System.in, multiOutputStream, multiOutputStream)
 
       //   ADD IMPORTS generates too many classes, client is responsible for adding import
+      /*
       logger.debug("Adding org.apache.spark.SparkContext._ to imports")
       iMain.interpret("import org.apache.spark.SparkContext._")
+      */
 
       logger.debug("Adding the hack for the exception handling retrieval.")
       iMain.bind("_exceptionHack", classOf[ExceptionHack].getName, exceptionHack, List("@transient"))

@@ -69,7 +69,6 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
   protected var settings: Settings = newSettings(List())
   settings = appendClassPath(settings)
 
-
   private val maxInterpreterThreads: Int = {
      if(config.hasPath("max_interpreter_threads"))
        config.getInt("max_interpreter_threads")
@@ -101,9 +100,37 @@ class ScalaInterpreter(private val config:Config = ConfigFactory.load) extends I
 
   protected def bindVariables(): Unit = {
     bindKernelVariable(kernel)
+    /*
     bindSparkSession()
     bindSparkContext()
     defineImplicits()
+    */
+
+
+    val initializationCode =
+      """
+        |import org.apache.spark.SparkContext._
+        |
+        |@transient val spark: org.apache.spark.sql.SparkSession = kernel.sparkSession
+        |
+        |@transient val sc: org.apache.spark.SparkContext = kernel.sparkContext
+        |
+        |
+        |import org.apache.spark.sql.SparkSession
+        |import org.apache.spark.sql.SQLContext
+        |import org.apache.spark.sql.SQLImplicits
+        |
+        |object implicits extends SQLImplicits with Serializable {
+        |  protected override def _sqlContext: SQLContext = SparkSession.builder.getOrCreate.sqlContext
+        |}
+        |
+        |import implicits._
+      """.stripMargin
+
+    doQuietly {
+      interpret(initializationCode)
+    }
+
   }
 
    protected[scala] def buildClasspath(classLoader: ClassLoader): String = {
