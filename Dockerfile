@@ -21,12 +21,16 @@ FROM andrewosh/binder-base
 USER root
 
 # for declarativewidgets
-RUN curl -sL https://deb.nodesource.com/setup_0.12 | bash - && \
-    apt-get install -y nodejs npm && \
+#RUN curl -sL https://deb.nodesource.com/setup_0.12 | bash - && \
+#    apt-get install -y nodejs npm && \
+#    npm install -g bower
+
+RUN apt-get install nodejs && \
     npm install -g bower
 
+
 # for pyspark demos
-ENV APACHE_SPARK_VERSION 2.0.0
+ENV APACHE_SPARK_VERSION 2.2.2
 
 RUN apt-get -y update && \
     apt-get -y install software-properties-common
@@ -70,7 +74,7 @@ USER main
 ENV DASHBOARDS_VERSION ==0.4.1
 ENV DASHBOARDS_BUNDLERS_VERSION ==0.2.2
 
-ENV TOREE_VERSION >=0.1.0.dev0, <=0.1.0
+ENV TOREE_VERSION >=0.2.0, <=0.3.0
 
 # get to the latest jupyter release and necessary libraries
 RUN conda install -y jupyter seaborn futures && \
@@ -87,20 +91,21 @@ RUN conda config --add channels r && \
 ENV DECL_WIDGETS_VERSION 0.4.3
 
 # install incubator extensions
-RUN pip install jupyter_dashboards==0.4.1 \
-    jupyter_declarativewidgets==$DECL_WIDGETS_VERSION \
-    jupyter_dashboards_bundlers==0.2.2
-RUN jupyter dashboards install --user --symlink && \
-    jupyter declarativewidgets install --user --symlink && \
-    jupyter dashboards activate && \
-    jupyter declarativewidgets activate && \
-    jupyter dashboards_bundlers activate
+#RUN pip install jupyter_dashboards  \
+#    jupyter_declarativewidgets \
+#    jupyter_dashboards_bundlers
+
+#RUN jupyter dashboards install --user --symlink && \
+#    jupyter declarativewidgets install --user --symlink && \
+#    jupyter dashboards activate && \
+#    jupyter declarativewidgets activate && \
+#    jupyter dashboards_bundlers activate
 
 # install kernel-side incubator extensions for python3 environment too
-RUN bash -c "source activate python3 && pip install jupyter_declarativewidgets==$DECL_WIDGETS_VERSION"
+#RUN bash -c "source activate python3 && pip install jupyter_declarativewidgets==$DECL_WIDGETS_VERSION"
 
 # install Toree
-RUN pip install 'toree>=0.1.0.dev0, <=0.1.0'
+RUN pip install 'toree>=0.2.0, <=0.3.0'
 RUN jupyter toree install --user
 
 
